@@ -1,4 +1,7 @@
-Install npm
+If you don't have npm: install npm
 
-Install "npm install live-server"
+> npm install -g live-server
+> cd kiddymaze
+> live-server
+
 
