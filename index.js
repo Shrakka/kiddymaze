@@ -55,7 +55,7 @@ function loadAssetsAndBootstrap() {
 
 function startGame() {
 	app.ticker.add(delta => gameLoop(delta));
-	setupCanvas(); // see game.js file. Everything should be set there
+	setupCanvas(); // see game.js file. 
 }
 
 function gameLoop(delta){ 

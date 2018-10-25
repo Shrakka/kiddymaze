@@ -1,6 +1,6 @@
 class Maze {
-  constructor(grid) {
-    this.grid = grid
+  constructor(levelNumber) {
+    this.grid = MAZES[levelNumber];
   }
 
   getGrid() {
@@ -12,6 +12,10 @@ class Maze {
       lig: (this.grid || []).length,
       col: (this.grid[0] || []).length 
     }
+  }
+
+  exampleOfGlobaleVariable() {
+    console.log('TILE_SIZE CAN BE ACCESSED ANYWHERE', TILE_SIZE);
   }
 
 }
