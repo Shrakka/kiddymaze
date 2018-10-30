@@ -5,4 +5,3 @@ const Container          = PIXI.Container,
       Sprite             = PIXI.Sprite,
       Text               = PIXI.Text,
       TextStyle          = PIXI.TextStyle
-      
