@@ -125,8 +125,18 @@ function drawInstructions() {
 	for(let i=0; i< instructions.length; i++) {
 		let sprite = new Sprite(loader.resources[instructions[i]].texture);
 		sprite.y = i * sprite.height + 10;
+		sprite.interactive = true;
+		sprite.buttonMode = true;
+		console.log(sprite);
+		sprite.on('pointerdown', () => removeInstruction(i));
 		instructionsContainer.addChild(sprite);
 	}
+}
+
+function removeInstruction(spriteId) {
+	console.log('remove', spriteId);
+	instructions.splice(spriteId, 1);
+	updateInstructions();
 }
 
 
