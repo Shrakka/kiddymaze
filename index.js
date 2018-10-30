@@ -31,6 +31,7 @@ function loadAssetsAndBootstrap() {
 	// Declare assets here
 	loader
 	.add("images/sprites/active.png")
+	.add("images/sprites/cat.png")
   .add("images/sprites/b_color_en.png")
   .add("images/sprites/b_forward_en.png")
   .add("images/sprites/b_left_en.png")
