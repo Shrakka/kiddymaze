@@ -19,7 +19,7 @@ class Instruction {
 			case COLOR: this.spriteName = 'color_'; break;
 			default: this.spriteName = 'forward_';
 		}
-		return new Sprite('images/sprites/' + this.spriteName + LANGUAGE + '.png');
+		return new Sprite(loader.resources['images/sprites/' + this.spriteName + LANGUAGE + '.png'].texture);
   }
 
 }
@@ -28,11 +28,19 @@ class Instruction {
 // ---------------- INSTRUCTION VIEWS AND FUNCTION  ------------------
 
 function setupInstructionScreen() {
-	const title = new Sprite(loader.resources["images/sprites/title_en.png"].texture)
+	setTitle();
+	setButtons();
+	setInstructionStack();
+}
+
+function setTitle() {
+	title = new Sprite(loader.resources["images/sprites/title_en.png"].texture)
 	title.width = Math.floor(WIDTH * INSTRUCTION_RATIO);
 	title.x = Math.floor(WIDTH * MAZE_RATIO);
 	app.stage.addChild(title);
+}
 
+function setButtons() {
 	const forwardButton = new Sprite(loader.resources["images/sprites/b_forward_en.png"].texture) 
 	forwardButton.width = Math.floor(WIDTH*0.1);
 	forwardButton.anchor.set(0.5);
@@ -52,13 +60,15 @@ function setupInstructionScreen() {
 	runButton.buttonMode = true;
 	runButton.on('pointerdown', runMaze);
 	app.stage.addChild(runButton);
-
-	instructions = []
-	instructionsContainer = new Container();
-	instructionsContainer.x = Math.floor(WIDTH*0.6);
-	app.stage.addChild(instructionsContainer);
 }
 
+function setInstructionStack() {
+	instructions = []
+	instructionsContainer = new Container();
+	instructionsContainer.x = Math.floor(WIDTH*0.6) + 5;
+	instructionsContainer.y = Math.floor(title.height);
+	app.stage.addChild(instructionsContainer);
+}
 
 function updateInstructions() {
 	instructionsContainer.removeChildren();
@@ -67,14 +77,14 @@ function updateInstructions() {
 
 function drawInstructions() {
 	for(let i=0; i< instructions.length; i++) {
-		let sprite = new Sprite(loader.resources[instructions[i]].texture);
+		let sprite = instructions[i].getSprite();
 		sprite.y = i * sprite.height + 10;
 		sprite.interactive = true;
 		sprite.buttonMode = true;
 		sprite.on('pointerdown', () => removeInstruction(i));
 		instructionsContainer.addChild(sprite);
 	}
-	instructionsContainer.height = 100;
+	resizeStackIfNecessary();
 }
 
 function removeInstruction(spriteId) {
@@ -83,8 +93,12 @@ function removeInstruction(spriteId) {
 }
 
 function addForward() {
-	instructions.push('images/sprites/forward_en.png');
+	instructions.push(new Instruction(FORWARD));
 	updateInstructions();
 }
 
-
+function resizeStackIfNecessary() {
+	if (instructionsContainer.height > HEIGHT*0.5) {
+		instructionsContainer.height = Math.floor(HEIGHT*0.5);
+	}
+}
