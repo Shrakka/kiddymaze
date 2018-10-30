@@ -127,10 +127,10 @@ function drawInstructions() {
 		sprite.y = i * sprite.height + 10;
 		sprite.interactive = true;
 		sprite.buttonMode = true;
-		console.log(sprite);
 		sprite.on('pointerdown', () => removeInstruction(i));
 		instructionsContainer.addChild(sprite);
 	}
+	instructionsContainer.height = 100;
 }
 
 function removeInstruction(spriteId) {
