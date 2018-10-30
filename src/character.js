@@ -17,13 +17,15 @@ function drawCharacter() {
 	character.width = TILE_SIZE;
 	character.height = TILE_SIZE;
 	character.anchor.set(0.5);
-	character.x = TILE_SIZE / 2
-	character.y = TILE_SIZE / 2
+	character.x = TILE_SIZE / 2;
+	character.y = TILE_SIZE / 2;
 	// character.rotation = SOUTH;
-  mazeContainer.addChild(character)
+  mazeContainer.addChild(character);
 }
 
 function runMaze() {
+	console.log(instructions);
+	
 	character.alpha = 0;
 	var frames = [];
 

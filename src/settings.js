@@ -1,3 +1,5 @@
+LANGUAGE = 'en';
+
 WIDTH  = window.innerWidth;
 HEIGHT = window.innerHeight;
 ENTRY_LEVEL = 1;
@@ -8,3 +10,8 @@ NORTH = 0;
 EAST = Math.PI / 2;
 WEST = 3 * Math.PI / 2;
 SOUTH = Math.PI;
+
+FORWARD = 0;
+LEFT = 1;
+RIGHT = 2;
+COLOR = 3;
