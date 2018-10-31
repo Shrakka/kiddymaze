@@ -1,7 +1,7 @@
 // -------------------------------- MAZE MODEL -------------------------
 class Maze {
   constructor(levelNumber) {
-    this.grid = MAZES[levelNumber];
+		this.grid = MAZES[levelNumber];
   }
 
   getGrid() {
@@ -14,10 +14,6 @@ class Maze {
       col: (this.grid[0] || []).length 
     }
   }
-
-  exampleOfGlobaleVariable() {
-    console.log('TILE_SIZE CAN BE ACCESSED ANYWHERE', TILE_SIZE);
-  }
 }
 
 // --------------------------- MAZE VIEW --------------------------------
@@ -29,10 +25,8 @@ function setupMazeScreen() {
     Math.floor(WIDTH * MAZE_RATIO / maze.getSize().col),
     Math.floor(HEIGHT / maze.getSize().lig));
 	drawMaze();
-	drawCharacter();
+	drawStaticCharacter();
   bindKeys(); // to be removed
-
-  maze.exampleOfGlobaleVariable(); // Variable scope ;-)
 }
 
 function drawMaze() {

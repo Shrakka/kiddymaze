@@ -1,15 +1,23 @@
+// -------------------------------- CHARACTER MODEL -------------------------
+class Character {
+  constructor(levelNumber) {
+		this.col = 0;
+		this.lig = 0;
+  }
+}
+
 // ---------------- CHARACTER ANIMATION AND VIEWS ------------------
 
-function drawCharacter() {
+function drawStaticCharacter() {
 	// character = new Sprite(loader.resources["images/sprites/active.png"].texture)
-	character = new Sprite(loader.resources["images/sprites/cat.png"].texture)
-	character.width = TILE_SIZE;
-	character.height = TILE_SIZE;
-	character.anchor.set(0.5);
-	character.x = TILE_SIZE / 2;
-	character.y = TILE_SIZE / 2;
-	character.rotation = SOUTH;
-  mazeContainer.addChild(character);
+	staticCharacter = new Sprite(loader.resources["images/sprites/cat.png"].texture)
+	staticCharacter.width = TILE_SIZE;
+	staticCharacter.height = TILE_SIZE;
+	staticCharacter.anchor.set(0.5);
+	staticCharacter.x = TILE_SIZE / 2;
+	staticCharacter.y = TILE_SIZE / 2;
+	staticCharacter.rotation = SOUTH;
+  mazeContainer.addChild(staticCharacter);
 }
 
 function runMaze() {
@@ -17,8 +25,15 @@ function runMaze() {
 	// Do whatever function you need and whatever class you want.
 	// You can access any global variables from game.js file (particularly character and animatedCharacter)
 	// and change the implementation if you don't like it :)
+	// HERE IS A STUB IMPLEMENTATION OF THE INSTRUCTIONS -> we need to replace the variable when its working
+	stubInstructions = createStubInstructions();
+	staticCharacter.alpha = 0;
+	createAnimatedCharacter();
+	tweens = createTweenList(stubInstructions); // replace by instruction when its working
+	tweens[0].start();
+}
 
-	// HERE IS A STUB IMPLEMENTATION OF THE INSTRUCTIONS
+function createStubInstructions() {
 	stubInstructions = []
 	stubInstructions.push(new Instruction(FORWARD))
 	stubInstructions.push(new Instruction(FORWARD))
@@ -29,34 +44,44 @@ function runMaze() {
 	stubInstructions.push(new Instruction(FORWARD))
 	stubInstructions.push(new Instruction(RIGHT))
 	stubInstructions.push(new Instruction(FORWARD))
-	
-	character.alpha = 0;
-	var frames = [];
-	for (var i = 1; i < 7; i++) {
+	return stubInstructions;
+}
+
+function createAnimatedCharacter() {
+	let frames = [];
+	for (let i = 1; i < 7; i++) {
 			frames.push(PIXI.Texture.fromFrame('cat0' + i + '.png'));
 	}
 
 	animatedCharacter = new PIXI.extras.AnimatedSprite(frames);
-	animatedCharacter.x = character.x;
-	animatedCharacter.y = character.y;
-	animatedCharacter.height = character.height;
-	animatedCharacter.width = character.width;
-	animatedCharacter.rotation = character.rotation + WEST;
+	animatedCharacter.x = staticCharacter.x;
+	animatedCharacter.y = staticCharacter.y;
+	animatedCharacter.height = staticCharacter.height;
+	animatedCharacter.width = staticCharacter.width;
+	animatedCharacter.rotation = staticCharacter.rotation + WEST;
 	animatedCharacter.anchor.set(0.5);
-	animatedCharacter.animationSpeed = 0.25;
+	animatedCharacter.animationSpeed = 0.17;
 	animatedCharacter.play();
 	mazeContainer.addChild(animatedCharacter);
+}
 
-	for(instruction in stubInstructions) {
-		// TODO: replace file at the right positon
-		console.log(instruction);
+function createTweenList(instuctions) {
+	let tweens = instuctions.map(instruction => getTween(instruction));
+	return setTweenChain(tweens, () => { staticCharacter.alpha = 1; animatedCharacter.alpha = 0;})
+}
+
+function setTweenChain(tweens, cb) {
+	tweens[0].on('end', () => {});
+	for(let i=0; i < (tweens.length - 1); i++) {
+		tweens[i].on('end', () => tweens[i+1].start());
 	}
+	tweens[tweens.length - 1].on('end', () => cb());
+	return tweens;
+}
 
+function getTween(instruction) {
 	const tween = PIXI.tweenManager.createTween(animatedCharacter);
-	tween.from({ y: character.x }).to({ y: character.y + TILE_SIZE })
+	tween.from({ y: animatedCharacter.y }).to({ y: animatedCharacter.y + TILE_SIZE });
 	tween.time = 1000;
-	tween.on('start', () => { console.log('tween started') });
-  tween.on('repeat', ( loopCount ) => { console.log('loopCount: ' + loopCount) });
-  tween.on('end', () => { character.alpha = 1; animatedCharacter.alpha = 0;});
-	tween.start();
+	return tween;
 }

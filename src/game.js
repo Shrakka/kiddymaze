@@ -1,7 +1,7 @@
 // GLOBAL VARIABLES SHARED WITH ALL FILES
 let TILE_SIZE;
 let mazeContainer, instructionsContainer;
-let maze, character, animatedCharacter, instructions, title;
+let maze, staticCharacter, animatedCharacter, instructions, title;
 
 function setupCanvas() {
 	setupMazeScreen();
@@ -14,10 +14,10 @@ function setupCanvas() {
 function bindKeys() {
 	window.addEventListener("keyup", function(event) {
 		switch(event.keyCode) {
-			case 37: character.x -= TILE_SIZE; break;
-			case 38: character.y -= TILE_SIZE; break;
-			case 39: character.x += TILE_SIZE; break;
-			case 40: character.y += TILE_SIZE; break;
+			case 37: staticCharacter.x -= TILE_SIZE; break; // BACKWARD
+			case 38: staticCharacter.y -= TILE_SIZE; break; // 
+			case 39: staticCharacter.x += TILE_SIZE; break; // FORWARD
+			case 40: staticCharacter.y += TILE_SIZE; break;
 		}
 	})
 }
