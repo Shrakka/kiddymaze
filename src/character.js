@@ -120,20 +120,15 @@ function runMaze() {
 
 function createStubInstructions() {
 	stubInstructions = []
-	// stubInstructions.push(new Instruction(FORWARD))
-	// stubInstructions.push(new Instruction(FORWARD))
-	// stubInstructions.push(new Instruction(LEFT))
-	// stubInstructions.push(new Instruction(FORWARD))
-	// stubInstructions.push(new Instruction(FORWARD))
-	// stubInstructions.push(new Instruction(FORWARD))
-	// stubInstructions.push(new Instruction(FORWARD))
-	// stubInstructions.push(new Instruction(RIGHT))
-	// stubInstructions.push(new Instruction(FORWARD))
-
+	stubInstructions.push(new Instruction(FORWARD))
 	stubInstructions.push(new Instruction(FORWARD))
 	stubInstructions.push(new Instruction(LEFT))
 	stubInstructions.push(new Instruction(FORWARD))
+	stubInstructions.push(new Instruction(FORWARD))
+	stubInstructions.push(new Instruction(FORWARD))
+	stubInstructions.push(new Instruction(FORWARD))
 	stubInstructions.push(new Instruction(RIGHT))
+	stubInstructions.push(new Instruction(FORWARD))
 	return stubInstructions;
 }
 
