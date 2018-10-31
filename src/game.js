@@ -1,7 +1,8 @@
 // GLOBAL VARIABLES SHARED WITH ALL FILES
 let TILE_SIZE;
 let mazeContainer, instructionsContainer;
-let maze, staticCharacter, animatedCharacter, instructions, title;
+let maze, instructions, title;
+let staticCharacter, animatedCharacter, instructionCharacter;
 
 function setupCanvas() {
 	setupMazeScreen();

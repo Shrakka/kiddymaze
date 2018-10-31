@@ -1,9 +1,95 @@
 // -------------------------------- CHARACTER MODEL -------------------------
 class Character {
   constructor(levelNumber) {
-		this.col = 0;
-		this.lig = 0;
-  }
+		this.col = CHARACTER_INIT_POSITION[levelNumber].col;
+		this.lig = CHARACTER_INIT_POSITION[levelNumber].lig;
+		this.orientation = CHARACTER_INIT_POSITION[levelNumber].orientation;
+		this.color = CHARACTER_INIT_POSITION[levelNumber].color;
+	}
+	
+	getState() {
+		return {
+			x: this.col * TILE_SIZE,
+			y: this.lig * TILE_SIZE,
+			rotation: this.orientation,
+			tint: this.color
+		}
+	}
+
+	updateState(instruction) {
+		if (instruction.type === LEFT) {
+			this.orientation -= EAST;
+		}
+
+		if (instruction.type === RIGHT) {
+			this.orientation += EAST;
+		}
+
+		if (instruction.type === COLOR) {
+			this.color = (this.color === BLUE ? RED : BLUE);
+		}
+
+		if (instruction.type === FORWARD) {
+			if (this.isForwardForbidden()) {
+				return 'collide';
+			} else {
+				this.goForward();
+			}
+		}
+		return 'ok';
+	}
+
+	isForwardForbidden() {
+		console.log(maze.getGrid()[0][0]);
+
+		return this.isEdgy() || this.isFacingWall() || this.isFacingWrongDoor();
+	}
+
+	isEdgy() {
+		// Return True if character is facing a outside boundery of the maze
+		switch(this.orientation) {
+			case SOUTH: return this.lig === maze.getSize().lig;
+			case NORTH: return this.lig === 0;
+			case EAST:  return this.col === maze.getSize().col;
+			case WEST:  return this.col === 0;
+		}
+	}
+
+	isFacingWall() {
+		switch(this.orientation) {
+			case SOUTH: return maze.getGrid()[this.lig + 1][this.col] === WALL;
+			case NORTH: return maze.getGrid()[this.lig - 1][this.col] === WALL;
+			case EAST:  return maze.getGrid()[this.lig][this.col + 1] === WALL;
+			case WEST:  return maze.getGrid()[this.lig][this.col - 1] === WALL;
+		}
+	}
+
+	isFacingWrongDoor() {
+		if(this.color === RED) {
+			switch(this.orientation) {
+				case SOUTH: return maze.getGrid()[this.lig + 1][this.col] === D_BL;
+				case NORTH: return maze.getGrid()[this.lig - 1][this.col] === D_BL;
+				case EAST:  return maze.getGrid()[this.lig][this.col + 1] === D_BL;
+				case WEST:  return maze.getGrid()[this.lig][this.col - 1] === D_BL;
+			}
+		} else {
+			switch(this.orientation) {
+				case SOUTH: return maze.getGrid()[this.lig + 1][this.col] === D_RD;
+				case NORTH: return maze.getGrid()[this.lig - 1][this.col] === D_RD;
+				case EAST:  return maze.getGrid()[this.lig][this.col + 1] === D_RD;
+				case WEST:  return maze.getGrid()[this.lig][this.col - 1] === D_RD;
+			}
+		}	
+	}
+
+	goForward() {
+		switch(this.orientation) {
+			case SOUTH: this.lig += 1; break;
+			case NORTH: this.lig -= 1; break;
+			case EAST:  this.col += 1; break;
+			case WEST:  this.col -= 1; break;
+		}
+	}
 }
 
 // ---------------- CHARACTER ANIMATION AND VIEWS ------------------
@@ -21,15 +107,15 @@ function drawStaticCharacter() {
 }
 
 function runMaze() {
-	// CHRIS You should work on this part
-	// Do whatever function you need and whatever class you want.
-	// You can access any global variables from game.js file (particularly character and animatedCharacter)
-	// and change the implementation if you don't like it :)
-	// HERE IS A STUB IMPLEMENTATION OF THE INSTRUCTIONS -> we need to replace the variable when its working
-	stubInstructions = createStubInstructions();
+	// CHRIS You should work on this part. You can use whatever function you need and whatever class you want.
+	// You can access any global variables from game.js file (particularly character and animatedCharacter) and change my implementation if you don't like it :)
 	staticCharacter.alpha = 0;
 	createAnimatedCharacter();
-	tweens = createTweenList(stubInstructions); // replace by instruction when its working
+	instructionCharacter = new Character(ENTRY_LEVEL);
+	
+	// HERE IS A STUB IMPLEMENTATION OF THE INSTRUCTIONS // replace by instruction when its working
+	stubInstructions = createStubInstructions();
+	tweens = createTweenList(stubInstructions); 
 	tweens[0].start();
 }
 
@@ -52,13 +138,13 @@ function createAnimatedCharacter() {
 	for (let i = 1; i < 7; i++) {
 			frames.push(PIXI.Texture.fromFrame('cat0' + i + '.png'));
 	}
-
 	animatedCharacter = new PIXI.extras.AnimatedSprite(frames);
 	animatedCharacter.x = staticCharacter.x;
 	animatedCharacter.y = staticCharacter.y;
 	animatedCharacter.height = staticCharacter.height;
 	animatedCharacter.width = staticCharacter.width;
 	animatedCharacter.rotation = staticCharacter.rotation + WEST;
+	animatedCharacter.tint = 0xff0000;
 	animatedCharacter.anchor.set(0.5);
 	animatedCharacter.animationSpeed = 0.17;
 	animatedCharacter.play();
@@ -67,21 +153,36 @@ function createAnimatedCharacter() {
 
 function createTweenList(instuctions) {
 	let tweens = instuctions.map(instruction => getTween(instruction));
-	return setTweenChain(tweens, () => { staticCharacter.alpha = 1; animatedCharacter.alpha = 0;})
+	return setTweenChain(tweens, resetAnimation)
 }
 
 function setTweenChain(tweens, cb) {
 	tweens[0].on('end', () => {});
 	for(let i=0; i < (tweens.length - 1); i++) {
-		tweens[i].on('end', () => tweens[i+1].start());
+		tweens[i].on('end', () => {console.log('startween', i); tweens[i+1].start() });
 	}
 	tweens[tweens.length - 1].on('end', () => cb());
 	return tweens;
 }
 
+function resetAnimation() {
+	staticCharacter.alpha = 1;
+	animatedCharacter.alpha = 0;
+}
+
 function getTween(instruction) {
-	const tween = PIXI.tweenManager.createTween(animatedCharacter);
-	tween.from({ y: animatedCharacter.y }).to({ y: animatedCharacter.y + TILE_SIZE });
+	const start = instructionCharacter.getState();
+	const type = instructionCharacter.updateState(instruction);
+	const end = instructionCharacter.getState();
+
+	let tween;
+	if (type === 'collide') {
+		tween = PIXI.tweenManager.createTween(animatedCharacter);	
+	} else {
+		tween = PIXI.tweenManager.createTween(animatedCharacter);
+	}
+	
 	tween.time = 1000;
+	tween.from(start).to(end);
 	return tween;
 }

@@ -1,18 +1,23 @@
 const MAZES = {
   1: [
-      [1, 1, 1, 0, 1, 2],
-      [1, 0, 1, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 1, 0],
-      [1, 0, 1, 1, 1, 0],
-      [1, 0, 1, 0, 0, 0],
+      [FREE, FREE, FREE, WALL, FREE, GOAL],
+      [FREE, WALL, FREE, WALL, WALL, FREE],
+      [FREE, FREE, FREE, FREE, FREE, FREE],
+      [FREE, WALL, WALL, WALL, FREE, WALL],
+      [FREE, WALL, FREE, FREE, FREE, WALL],
+      [FREE, WALL, FREE, WALL, WALL, WALL],
     ],
   2: [
-      [1, 1, 1, 0, 1, 2],
-      [1, 0, 1, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 1, 0],
-      [1, 0, 1, 1, 1, 0],
-      [1, 0, 1, 1, 0, 0],
-    ],
+      [FREE, FREE, FREE, WALL, FREE, GOAL],
+      [FREE, WALL, FREE, WALL, WALL, FREE],
+      [FREE, FREE, FREE, FREE, FREE, FREE],
+      [FREE, WALL, WALL, WALL, FREE, WALL],
+      [FREE, WALL, FREE, FREE, FREE, WALL],
+      [FREE, WALL, FREE, WALL, WALL, WALL],
+  ],
+}
+
+const CHARACTER_INIT_POSITION = {
+  1: { col: 0, lig: 0, orientation: SOUTH, color: RED },
+  2: { col: 0, lig: 0, orientation: SOUTH, color: BLUE },
 }
