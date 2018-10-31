@@ -12,10 +12,10 @@ GOAL = 2;
 D_BL = 3;
 D_RD = 4;
 
-NORTH = 0;
-EAST = Math.PI / 2;
-WEST = 3 * Math.PI / 2;
-SOUTH = Math.PI;
+NORTH = 3* Math.PI / 2;
+EAST = 0;
+WEST = Math.PI;
+SOUTH = Math.PI / 2;
 
 FORWARD = 0;
 LEFT = 1;

@@ -9,8 +9,6 @@ function setupCanvas() {
 	setupInstructionScreen();
 }
 
-
-
 // WILL BE REMOVED SOON (not used in the game)
 function bindKeys() {
 	window.addEventListener("keyup", function(event) {

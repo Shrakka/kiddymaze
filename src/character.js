@@ -9,8 +9,8 @@ class Character {
 	
 	getState() {
 		return {
-			x: this.col * TILE_SIZE,
-			y: this.lig * TILE_SIZE,
+			x: this.col * TILE_SIZE + TILE_SIZE / 2,
+			y: this.lig * TILE_SIZE + TILE_SIZE / 2,
 			rotation: this.orientation,
 			tint: this.color
 		}
@@ -18,11 +18,11 @@ class Character {
 
 	updateState(instruction) {
 		if (instruction.type === LEFT) {
-			this.orientation -= EAST;
+			this.orientation -= (Math.PI / 2);
 		}
 
 		if (instruction.type === RIGHT) {
-			this.orientation += EAST;
+			this.orientation += (Math.PI / 2);
 		}
 
 		if (instruction.type === COLOR) {
@@ -40,23 +40,21 @@ class Character {
 	}
 
 	isForwardForbidden() {
-		console.log(maze.getGrid()[0][0]);
-
 		return this.isEdgy() || this.isFacingWall() || this.isFacingWrongDoor();
 	}
 
 	isEdgy() {
 		// Return True if character is facing a outside boundery of the maze
 		switch(this.orientation) {
-			case SOUTH: return this.lig === maze.getSize().lig;
+			case SOUTH: return this.lig === maze.getSize().lig - 1;
 			case NORTH: return this.lig === 0;
-			case EAST:  return this.col === maze.getSize().col;
+			case EAST:  return this.col === maze.getSize().col - 1;
 			case WEST:  return this.col === 0;
 		}
 	}
 
 	isFacingWall() {
-		switch(this.orientation) {
+		switch(this.orientation) {	
 			case SOUTH: return maze.getGrid()[this.lig + 1][this.col] === WALL;
 			case NORTH: return maze.getGrid()[this.lig - 1][this.col] === WALL;
 			case EAST:  return maze.getGrid()[this.lig][this.col + 1] === WALL;
@@ -102,8 +100,9 @@ function drawStaticCharacter() {
 	staticCharacter.anchor.set(0.5);
 	staticCharacter.x = TILE_SIZE / 2;
 	staticCharacter.y = TILE_SIZE / 2;
-	staticCharacter.rotation = SOUTH;
-  mazeContainer.addChild(staticCharacter);
+	staticCharacter.rotation = CHARACTER_INIT_POSITION[ENTRY_LEVEL].orientation;
+	mazeContainer.addChild(staticCharacter);
+	console.log(staticCharacter.rotation, SOUTH)
 }
 
 function runMaze() {
@@ -121,15 +120,20 @@ function runMaze() {
 
 function createStubInstructions() {
 	stubInstructions = []
-	stubInstructions.push(new Instruction(FORWARD))
+	// stubInstructions.push(new Instruction(FORWARD))
+	// stubInstructions.push(new Instruction(FORWARD))
+	// stubInstructions.push(new Instruction(LEFT))
+	// stubInstructions.push(new Instruction(FORWARD))
+	// stubInstructions.push(new Instruction(FORWARD))
+	// stubInstructions.push(new Instruction(FORWARD))
+	// stubInstructions.push(new Instruction(FORWARD))
+	// stubInstructions.push(new Instruction(RIGHT))
+	// stubInstructions.push(new Instruction(FORWARD))
+
 	stubInstructions.push(new Instruction(FORWARD))
 	stubInstructions.push(new Instruction(LEFT))
 	stubInstructions.push(new Instruction(FORWARD))
-	stubInstructions.push(new Instruction(FORWARD))
-	stubInstructions.push(new Instruction(FORWARD))
-	stubInstructions.push(new Instruction(FORWARD))
 	stubInstructions.push(new Instruction(RIGHT))
-	stubInstructions.push(new Instruction(FORWARD))
 	return stubInstructions;
 }
 
@@ -143,7 +147,7 @@ function createAnimatedCharacter() {
 	animatedCharacter.y = staticCharacter.y;
 	animatedCharacter.height = staticCharacter.height;
 	animatedCharacter.width = staticCharacter.width;
-	animatedCharacter.rotation = staticCharacter.rotation + WEST;
+	animatedCharacter.rotation = staticCharacter.rotation;
 	animatedCharacter.tint = 0xff0000;
 	animatedCharacter.anchor.set(0.5);
 	animatedCharacter.animationSpeed = 0.17;
@@ -174,6 +178,7 @@ function getTween(instruction) {
 	const start = instructionCharacter.getState();
 	const type = instructionCharacter.updateState(instruction);
 	const end = instructionCharacter.getState();
+	
 
 	let tween;
 	if (type === 'collide') {
