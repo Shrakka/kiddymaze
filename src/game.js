@@ -2,7 +2,7 @@
 let TILE_SIZE;
 let mazeContainer, instructionsContainer;
 let maze, instructions, title;
-let staticCharacter, animatedCharacter, instructionCharacter;
+let staticCharacter, animatedCharacter, animatedCollision, instructionCharacter;
 
 function setupCanvas() {
 	setupMazeScreen();

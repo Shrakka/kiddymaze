@@ -17,6 +17,7 @@ class Character {
 	}
 
 	updateState(instruction) {
+  		console.log('update called');
 		if (instruction.type === LEFT) {
 			this.orientation -= (Math.PI / 2);
 		}
@@ -109,16 +110,17 @@ function runMaze() {
 	// CHRIS You should work on this part. You can use whatever function you need and whatever class you want.
 	// You can access any global variables from game.js file (particularly character and animatedCharacter) and change my implementation if you don't like it :)
 	staticCharacter.alpha = 0;
-	createAnimatedCharacter();
+	createAnimatedCharacter('w');
 	instructionCharacter = new Character(ENTRY_LEVEL);
 	
 	// HERE IS A STUB IMPLEMENTATION OF THE INSTRUCTIONS // replace by instruction when its working
-	stubInstructions = createStubInstructions();
+	//stubInstructions = createStubInstructionsPass();
+    stubInstructions = createStubInstructionsFail();
 	tweens = createTweenList(stubInstructions); 
 	tweens[0].start();
 }
 
-function createStubInstructions() {
+function createStubInstructionsPass() {
 	stubInstructions = []
 	stubInstructions.push(new Instruction(FORWARD))
 	stubInstructions.push(new Instruction(FORWARD))
@@ -131,11 +133,31 @@ function createStubInstructions() {
 	stubInstructions.push(new Instruction(FORWARD))
 	return stubInstructions;
 }
+function createStubInstructionsFail() {
+    stubInstructions = []
+    stubInstructions.push(new Instruction(FORWARD))
+    stubInstructions.push(new Instruction(LEFT))
+    stubInstructions.push(new Instruction(FORWARD))
+    stubInstructions.push(new Instruction(FORWARD))
+    stubInstructions.push(new Instruction(LEFT))
+    stubInstructions.push(new Instruction(FORWARD))
+    stubInstructions.push(new Instruction(RIGHT))
+    stubInstructions.push(new Instruction(FORWARD))
+    return stubInstructions;
+}
 
-function createAnimatedCharacter() {
+function createAnimatedCharacter(val) {
+
 	let frames = [];
-	for (let i = 1; i < 7; i++) {
-			frames.push(PIXI.Texture.fromFrame('cat0' + i + '.png'));
+	if(val==='w'){
+        for (let i = 1; i < 7; i++) {
+            frames.push(PIXI.Texture.fromFrame('cat0' + i + '.png'));
+        }
+	}
+	else if(val==='c'){
+        for (let i = 1; i < 7; i++) {
+            frames.push(PIXI.Texture.fromFrame('bumpcat0' + i + '.png'));
+        }
 	}
 	animatedCharacter = new PIXI.extras.AnimatedSprite(frames);
 	animatedCharacter.x = staticCharacter.x;
@@ -143,11 +165,51 @@ function createAnimatedCharacter() {
 	animatedCharacter.height = staticCharacter.height;
 	animatedCharacter.width = staticCharacter.width;
 	animatedCharacter.rotation = staticCharacter.rotation;
-	animatedCharacter.tint = 0xff0000;
+	//animatedCharacter.tint = 0xff0000;
 	animatedCharacter.anchor.set(0.5);
 	animatedCharacter.animationSpeed = 0.17;
 	animatedCharacter.play();
 	mazeContainer.addChild(animatedCharacter);
+}
+
+function createAnimatedCharacter(x_pos, y_pos) {
+
+    let frames = [];
+	for (let i = 1; i < 7; i++) {
+		frames.push(PIXI.Texture.fromFrame('cat0' + i + '.png'));
+	}
+    animatedCharacter = new PIXI.extras.AnimatedSprite(frames);
+    animatedCharacter.x = x_pos;
+    animatedCharacter.y = y_pos;
+    animatedCharacter.height = staticCharacter.height;
+    animatedCharacter.width = staticCharacter.width;
+    animatedCharacter.rotation = staticCharacter.rotation;
+    animatedCharacter.tint = 0;
+    animatedCharacter.anchor.set(0.5);
+    animatedCharacter.animationSpeed = 0.17;
+    animatedCharacter.play();
+    mazeContainer.addChild(animatedCharacter);
+}
+
+function createAnimatedCollision(x_pos, y_pos, rotation) {
+    let frames = [];
+	for (let i = 1; i < 7; i++) {
+		frames.push(PIXI.Texture.fromFrame('bumpcat0' + i + '.png'));
+	}
+
+    animatedCollision = new PIXI.extras.AnimatedSprite(frames);
+    animatedCollision.x = x_pos;
+    animatedCollision.y = y_pos;
+    animatedCollision.height = staticCharacter.height;
+    animatedCollision.width = staticCharacter.width;
+    animatedCollision.rotation = rotation;
+    //animatedCharacter.tint = 0xff0000;
+    animatedCollision.anchor.set(0.5);
+    animatedCollision.animationSpeed = 0.17;
+    animatedCharacter.visible = false;
+    animatedCollision.play();
+    mazeContainer.addChild(animatedCollision);
+
 }
 
 function createTweenList(instuctions) {
@@ -155,10 +217,30 @@ function createTweenList(instuctions) {
 	return setTweenChain(tweens, resetAnimation)
 }
 
-function setTweenChain(tweens, cb) {
+function setTweenChain(tweens, cb) { //There is an order of operations problem where the animation happens at the end of the 'tween'
 	tweens[0].on('end', () => {});
 	for(let i=0; i < (tweens.length - 1); i++) {
-		tweens[i].on('end', () => {console.log('startween', i); tweens[i+1].start() });
+		tweens[i].on('start', () =>{
+			console.log('started a tween yay');
+			let from = tweens[i]._from;
+			let to = tweens[i]._to;
+			console.log("from: " + JSON.stringify(from));
+			console.log("to: " + JSON.stringify(to));
+			if(from.x === to.x && from.y === to.y && to.rotation === 0 && from.rotation === 0){
+				console.log("Realtime Collision!");
+				animatedCharacter.visible = false;
+				//mazeContainer.removeChild(animatedCharacter);
+				createAnimatedCollision(tweens[i]._from.x, tweens[i]._from.y, tweens[i]._from.rotation);
+			}
+		});
+		tweens[i].on('end', () => {
+            console.log('endtween', i);
+			if(animatedCollision!==null){
+				mazeContainer.removeChild(animatedCollision);
+			}
+        	animatedCharacter.visible = true;
+			tweens[i+1].start()
+		});
 	}
 	tweens[tweens.length - 1].on('end', () => cb());
 	return tweens;
@@ -177,12 +259,14 @@ function getTween(instruction) {
 
 	let tween;
 	if (type === 'collide') {
-		tween = PIXI.tweenManager.createTween(animatedCharacter);	
+		console.log('collided');
+		tween = PIXI.tweenManager.createTween(animatedCharacter);
 	} else {
 		tween = PIXI.tweenManager.createTween(animatedCharacter);
 	}
 	
 	tween.time = 1000;
 	tween.from(start).to(end);
+
 	return tween;
 }
