@@ -24,3 +24,6 @@ COLOR = 3;
 
 RED = 0xff0000;
 BLUE = 0x0000ff;
+
+WALK = 0;
+COLLIDE = 1;

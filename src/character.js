@@ -31,12 +31,12 @@ class Character {
 
 		if (instruction.type === FORWARD) {
 			if (this.isForwardForbidden()) {
-				return 'collide';
+				return COLLIDE;
 			} else {
 				this.goForward();
 			}
 		}
-		return 'ok';
+		return WALK;
 	}
 
 	isForwardForbidden() {
@@ -102,52 +102,56 @@ function drawStaticCharacter() {
 	staticCharacter.y = TILE_SIZE / 2;
 	staticCharacter.rotation = CHARACTER_INIT_POSITION[ENTRY_LEVEL].orientation;
 	mazeContainer.addChild(staticCharacter);
-	console.log(staticCharacter.rotation, SOUTH)
 }
 
 function runMaze() {
-	// CHRIS You should work on this part. You can use whatever function you need and whatever class you want.
-	// You can access any global variables from game.js file (particularly character and animatedCharacter) and change my implementation if you don't like it :)
 	staticCharacter.alpha = 0;
 	createAnimatedCharacter();
 	instructionCharacter = new Character(ENTRY_LEVEL);
-	
-	// HERE IS A STUB IMPLEMENTATION OF THE INSTRUCTIONS // replace by instruction when its working
-	stubInstructions = createStubInstructions();
-	tweens = createTweenList(stubInstructions); 
+	instructions = (instructions.length === 0) ? createStubInstructions() : instructions; // to be updated;
+	tweens = createTweenList(instructions);
 	tweens[0].start();
 }
 
-function createStubInstructions() {
-	stubInstructions = []
-	stubInstructions.push(new Instruction(FORWARD))
-	stubInstructions.push(new Instruction(FORWARD))
-	stubInstructions.push(new Instruction(LEFT))
-	stubInstructions.push(new Instruction(FORWARD))
-	stubInstructions.push(new Instruction(FORWARD))
-	stubInstructions.push(new Instruction(FORWARD))
-	stubInstructions.push(new Instruction(FORWARD))
-	stubInstructions.push(new Instruction(RIGHT))
-	stubInstructions.push(new Instruction(FORWARD))
-	return stubInstructions;
-}
-
-function createAnimatedCharacter() {
-	let frames = [];
-	for (let i = 1; i < 7; i++) {
-			frames.push(PIXI.Texture.fromFrame('cat0' + i + '.png'));
-	}
-	animatedCharacter = new PIXI.extras.AnimatedSprite(frames);
+function createAnimatedCharacter(type = WALK) {
+	animatedCharacter = new PIXI.extras.AnimatedSprite(getFrames(type));
 	animatedCharacter.x = staticCharacter.x;
 	animatedCharacter.y = staticCharacter.y;
 	animatedCharacter.height = staticCharacter.height;
 	animatedCharacter.width = staticCharacter.width;
 	animatedCharacter.rotation = staticCharacter.rotation;
-	animatedCharacter.tint = 0xff0000;
 	animatedCharacter.anchor.set(0.5);
 	animatedCharacter.animationSpeed = 0.17;
 	animatedCharacter.play();
 	mazeContainer.addChild(animatedCharacter);
+}
+
+function getFrames(type) {
+	let frames = [];
+	if (type === WALK) {
+		for (let i = 1; i < 7; i++) {
+			frames.push(PIXI.Texture.fromFrame('cat0' + i + '.png'));
+		}
+	}
+	if (type === COLLIDE) {
+		for (let i = 1; i < 7; i++) {
+			frames.push(PIXI.Texture.fromFrame('bumpcat0' + i + '.png'));
+		}
+	}
+	return frames;
+}
+
+function createAnimatedCollision(x, y, rotation) {
+    animatedCollision = new PIXI.extras.AnimatedSprite(getFrames(COLLIDE));
+    animatedCollision.x = x;
+    animatedCollision.y = y;
+		animatedCollision.rotation = rotation;
+		animatedCollision.height = staticCharacter.height;
+    animatedCollision.width = staticCharacter.width;
+    animatedCollision.anchor.set(0.5);
+    animatedCollision.animationSpeed = 0.2;
+    animatedCollision.play();
+    mazeContainer.addChild(animatedCollision);
 }
 
 function createTweenList(instuctions) {
@@ -156,33 +160,71 @@ function createTweenList(instuctions) {
 }
 
 function setTweenChain(tweens, cb) {
-	tweens[0].on('end', () => {});
-	for(let i=0; i < (tweens.length - 1); i++) {
-		tweens[i].on('end', () => {console.log('startween', i); tweens[i+1].start() });
+	for (let i = 0; i < (tweens.length - 1); i++) {
+		tweens[i].on('start', () => checkCollision(tweens[i]))
+		tweens[i].on('end', () => { checkEndCollision(); tweens[i+1].start(); });
 	}
-	tweens[tweens.length - 1].on('end', () => cb());
+	// special case for last tween
+	tweens[tweens.length - 1].on('start', () => checkCollision(tweens[tweens.length - 1]));
+	tweens[tweens.length - 1].on('end', () => { checkEndCollision(); cb()});
 	return tweens;
 }
 
 function resetAnimation() {
 	staticCharacter.alpha = 1;
 	animatedCharacter.alpha = 0;
+	animatedCollision = null;
 }
 
 function getTween(instruction) {
 	const start = instructionCharacter.getState();
 	const type = instructionCharacter.updateState(instruction);
 	const end = instructionCharacter.getState();
-	
 
-	let tween;
-	if (type === 'collide') {
-		tween = PIXI.tweenManager.createTween(animatedCharacter);	
-	} else {
-		tween = PIXI.tweenManager.createTween(animatedCharacter);
-	}
-	
+	let tween = PIXI.tweenManager.createTween(animatedCharacter);
 	tween.time = 1000;
 	tween.from(start).to(end);
 	return tween;
+}
+
+function checkCollision(tween) {
+	const from = tween._from;
+	const to = tween._to;
+	if ( (from.x === to.x) && (from.y === to.y) && (from.rotation === to.rotation)){
+		animatedCharacter.visible = false;
+		createAnimatedCollision(from.x, from.y, from.rotation);
+	}
+}
+
+function checkEndCollision() {
+	if (animatedCollision !== null) {
+		mazeContainer.removeChild(animatedCollision);
+	}
+	animatedCharacter.visible = true;
+}
+
+function updateAnimatedCharacter(type, start) {
+	animatedCharacter = new PIXI.extras.AnimatedSprite(getFrames(type));
+	animatedCharacter.x = start.x;
+	animatedCharacter.y = start.y;
+	animatedCharacter.rotation = start.rotation;
+	animatedCharacter.height = staticCharacter.height;
+	animatedCharacter.width = staticCharacter.width;
+	animatedCharacter.anchor.set(0.5);
+	animatedCharacter.animationSpeed = 0.17;
+	animatedCharacter.play();
+}
+
+function createStubInstructions() {
+	stubInstructions = []
+	stubInstructions.push(new Instruction(FORWARD))
+	// stubInstructions.push(new Instruction(FORWARD))
+	stubInstructions.push(new Instruction(LEFT))
+	stubInstructions.push(new Instruction(FORWARD))
+	// stubInstructions.push(new Instruction(FORWARD))
+	// stubInstructions.push(new Instruction(FORWARD))
+	// stubInstructions.push(new Instruction(FORWARD))
+	// stubInstructions.push(new Instruction(RIGHT))
+	// stubInstructions.push(new Instruction(FORWARD))
+	return stubInstructions;
 }
