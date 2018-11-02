@@ -51,6 +51,36 @@ function setButtons() {
 	forwardButton.on('pointerdown', addForward);
 	app.stage.addChild(forwardButton);
 
+	const rotateRightButton = new Sprite(loader.resources["images/sprites/b_right_en.png"].texture)
+	rotateRightButton.width = Math.floor(WIDTH*0.1)
+	rotateRightButton.anchor.set(0.5);
+	rotateRightButton.x = Math.floor(WIDTH*0.92);
+	rotateRightButton.y = Math.floor(HEIGHT*0.7);
+	rotateRightButton.interactive = true;
+	rotateRightButton.buttonMode = true;
+	rotateRightButton.on('pointerdown', addRight);
+	app.stage.addChild(rotateRightButton);
+
+	const rotateLeftButton = new Sprite(loader.resources["images/sprites/b_left_en.png"].texture)
+	rotateLeftButton.width = Math.floor(WIDTH*0.1)
+	rotateLeftButton.anchor.set(0.5);
+	rotateLeftButton.x = Math.floor(WIDTH*0.68);
+	rotateLeftButton.y = Math.floor(HEIGHT*0.7);
+	rotateLeftButton.interactive = true;
+	rotateLeftButton.buttonMode = true;
+	rotateLeftButton.on('pointerdown', addLeft);
+	app.stage.addChild(rotateLeftButton);
+
+	const changeColor = new Sprite(loader.resources["images/sprites/b_color_en.png"].texture)
+	changeColor.width = Math.floor(WIDTH*0.1)
+	changeColor.anchor.set(0.5);
+	changeColor.x = Math.floor(WIDTH*0.8);
+	changeColor.y = Math.floor(HEIGHT*0.6);
+	changeColor.interactive = true;
+	changeColor.buttonMode = true;
+	changeColor.on('pointerdown', addColor);
+	app.stage.addChild(changeColor);
+
 	const runButton = new Sprite(loader.resources["images/sprites/run_en.png"].texture) 
 	runButton.width = Math.floor(WIDTH*0.1);
 	runButton.anchor.set(0.5);
@@ -76,13 +106,16 @@ function updateInstructions() {
 }
 
 function drawInstructions() {
+	temp_y=10;
 	for(let i=0; i< instructions.length; i++) {
+
 		let sprite = instructions[i].getSprite();
-		sprite.y = i * sprite.height + 10;
+		sprite.y = temp_y;
 		sprite.interactive = true;
 		sprite.buttonMode = true;
 		sprite.on('pointerdown', () => removeInstruction(i));
 		instructionsContainer.addChild(sprite);
+		temp_y +=sprite.height;
 	}
 	resizeStackIfNecessary();
 }
@@ -96,6 +129,22 @@ function addForward() {
 	instructions.push(new Instruction(FORWARD));
 	updateInstructions();
 }
+
+function addRight() {
+	instructions.push(new Instruction(RIGHT));
+	updateInstructions();
+}
+
+function addLeft() {
+	instructions.push(new Instruction(LEFT));
+	updateInstructions();
+}
+
+function addColor() {
+	instructions.push(new Instruction(COLOR));
+	updateInstructions();
+}
+
 
 function resizeStackIfNecessary() {
 	if (instructionsContainer.height > HEIGHT*0.5) {
