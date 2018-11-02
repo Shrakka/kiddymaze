@@ -11,6 +11,7 @@ FREE = 1;
 GOAL = 2;
 D_BL = 3;
 D_RD = 4;
+WAL2 = 5;
 
 NORTH = 3* Math.PI / 2;
 EAST = 0;

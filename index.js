@@ -48,7 +48,8 @@ function loadAssetsAndBootstrap() {
   .add("images/sprites/right_en.png")
   .add("images/sprites/run_en.png")
   .add("images/sprites/title_en.png")
-  .add("images/sprites/wall.png")
+	.add("images/sprites/wall.png")
+	.add("images/sprites/wall2.png")
   .add('images/spritesheets/walk.json')
   .add('images/spritesheets/bump.json')
 	.load(startGame); 
