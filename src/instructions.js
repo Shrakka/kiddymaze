@@ -48,7 +48,7 @@ function setButtons() {
 	forwardButton.y = Math.floor(HEIGHT*0.7);
 	forwardButton.interactive = true;
 	forwardButton.buttonMode = true;
-	forwardButton.on('pointerdown', addForward);
+	forwardButton.on('pointerdown', () => addInstruction(FORWARD));
 	app.stage.addChild(forwardButton);
 
 	const rotateRightButton = new Sprite(loader.resources["images/sprites/b_right_en.png"].texture)
@@ -58,7 +58,7 @@ function setButtons() {
 	rotateRightButton.y = Math.floor(HEIGHT*0.7);
 	rotateRightButton.interactive = true;
 	rotateRightButton.buttonMode = true;
-	rotateRightButton.on('pointerdown', addRight);
+	rotateRightButton.on('pointerdown', () => addInstruction(RIGHT));
 	app.stage.addChild(rotateRightButton);
 
 	const rotateLeftButton = new Sprite(loader.resources["images/sprites/b_left_en.png"].texture)
@@ -68,7 +68,7 @@ function setButtons() {
 	rotateLeftButton.y = Math.floor(HEIGHT*0.7);
 	rotateLeftButton.interactive = true;
 	rotateLeftButton.buttonMode = true;
-	rotateLeftButton.on('pointerdown', addLeft);
+	rotateLeftButton.on('pointerdown', () => addInstruction(LEFT));
 	app.stage.addChild(rotateLeftButton);
 
 	const changeColor = new Sprite(loader.resources["images/sprites/b_color_en.png"].texture)
@@ -78,7 +78,7 @@ function setButtons() {
 	changeColor.y = Math.floor(HEIGHT*0.6);
 	changeColor.interactive = true;
 	changeColor.buttonMode = true;
-	changeColor.on('pointerdown', addColor);
+	changeColor.on('pointerdown', () => addInstruction(COLOR));
 	app.stage.addChild(changeColor);
 
 	const runButton = new Sprite(loader.resources["images/sprites/run_en.png"].texture) 
@@ -98,6 +98,11 @@ function setInstructionStack() {
 	instructionsContainer.x = Math.floor(WIDTH*0.6) + 5;
 	instructionsContainer.y = Math.floor(title.height);
 	app.stage.addChild(instructionsContainer);
+}
+
+function addInstruction(instructionCode) {
+	instructions.push(new Instruction(instructionCode));
+	updateInstructions();
 }
 
 function updateInstructions() {
@@ -124,27 +129,6 @@ function removeInstruction(spriteId) {
 	instructions.splice(spriteId, 1);
 	updateInstructions();
 }
-
-function addForward() {
-	instructions.push(new Instruction(FORWARD));
-	updateInstructions();
-}
-
-function addRight() {
-	instructions.push(new Instruction(RIGHT));
-	updateInstructions();
-}
-
-function addLeft() {
-	instructions.push(new Instruction(LEFT));
-	updateInstructions();
-}
-
-function addColor() {
-	instructions.push(new Instruction(COLOR));
-	updateInstructions();
-}
-
 
 function resizeStackIfNecessary() {
 	if (instructionsContainer.height > HEIGHT*0.5) {
