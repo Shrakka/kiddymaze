@@ -55,10 +55,10 @@ class Character {
 
 	isFacingWall() {
 		switch(this.orientation) {	
-			case SOUTH: return maze.getGrid()[this.lig + 1][this.col] === WALL || WAL2;
-			case NORTH: return maze.getGrid()[this.lig - 1][this.col] === WALL || WAL2;
-			case EAST:  return maze.getGrid()[this.lig][this.col + 1] === WALL || WAL2;
-			case WEST:  return maze.getGrid()[this.lig][this.col - 1] === WALL || WAL2;
+			case SOUTH: return (maze.getGrid()[this.lig + 1][this.col] === WALL) || (maze.getGrid()[this.lig + 1][this.col] === WAL2);
+			case NORTH: return (maze.getGrid()[this.lig - 1][this.col] === WALL) || (maze.getGrid()[this.lig - 1][this.col] === WAL2);
+			case EAST:  return (maze.getGrid()[this.lig][this.col + 1] === WALL) || (maze.getGrid()[this.lig][this.col + 1] === WAL2);
+			case WEST:  return (maze.getGrid()[this.lig][this.col - 1] === WALL) || (maze.getGrid()[this.lig][this.col - 1] === WAL2);
 		}
 	}
 
