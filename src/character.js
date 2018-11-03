@@ -45,7 +45,7 @@ class Character {
 
 	isEdgy() {
 		// Return True if character is facing a outside boundery of the maze
-		switch(this.orientation) {
+		switch(this.orientation % Math.PI) {
 			case SOUTH: return this.lig === maze.getSize().lig - 1;
 			case NORTH: return this.lig === 0;
 			case EAST:  return this.col === maze.getSize().col - 1;

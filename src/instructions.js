@@ -17,7 +17,7 @@ class Instruction {
 			default: this.spriteName = 'forward';
 		}
 		return new Sprite(getSpriteTexture(this.spriteName));
-  }
+	}
 }
 
 
@@ -26,6 +26,7 @@ function setupInstructionScreen() {
 	setTitle();
 	setInstructionStack();
 	setButtons();
+	setTranslationButton();
 }
 
 function setTitle() {
@@ -136,4 +137,25 @@ function addInstructionButton(spriteName, buttonCode, x, y, width, xAnchor=0.5, 
 	button.y = Math.floor(y);
 	button.on('pointerdown', () => addInstruction(buttonCode));
 	buttonsContainer.addChild(button);
+}
+
+function setTranslationButton() {
+	const flagName = (LANGUAGE === 'fr' ? 'en' : 'fr');
+	const translationButton = new Sprite(loader.resources[`images/sprites/${flagName}.png`].texture);
+	translationButton.interactive = true;
+	translationButton.buttonMode = true;
+	translationButton.anchor.set(1,1);
+	translationButton.x = app.screen.width - 5;
+	translationButton.y = app.screen.height - 5;
+	setSpriteWidth(translationButton, 20)
+	translationButton.on('pointerdown', switchLanguage);
+	app.stage.addChild(translationButton);
+}
+
+function switchLanguage() {
+	console.log('change language')
+	LANGUAGE = (LANGUAGE === 'fr' ? 'en' : 'fr');
+	app.stage.removeChild(buttonsContainer);
+	setButtons();
+
 }
