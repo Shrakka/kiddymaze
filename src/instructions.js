@@ -1,6 +1,7 @@
 
 // ---------------- INSTRUCTION MODEL  ------------------
 
+
 class Instruction {
   constructor(type) {
 		this.type = type;
@@ -27,10 +28,13 @@ class Instruction {
 
 // ---------------- INSTRUCTION VIEWS AND FUNCTION  ------------------
 
+mode = 0;
+
 function setupInstructionScreen() {
 	setTitle();
 	setButtons();
 	setInstructionStack();
+	setChangeLanguageButton();
 }
 
 function setTitle() {
@@ -41,51 +45,57 @@ function setTitle() {
 }
 
 function setButtons() {
-	const forwardButton = new Sprite(loader.resources["images/sprites/b_forward_en.png"].texture) 
+		
+	forwardButton = new Sprite(loader.resources["images/sprites/b_forward_en.png"].texture);
 	forwardButton.width = Math.floor(WIDTH*0.1);
+	forwardButton.height = Math.floor(HEIGHT*0.05);
 	forwardButton.anchor.set(0.5);
 	forwardButton.x = Math.floor(WIDTH*0.8);
-	forwardButton.y = Math.floor(HEIGHT*0.7);
+	forwardButton.y = Math.floor(HEIGHT*0.75);
 	forwardButton.interactive = true;
 	forwardButton.buttonMode = true;
 	forwardButton.on('pointerdown', () => addInstruction(FORWARD));
 	app.stage.addChild(forwardButton);
 
-	const rotateRightButton = new Sprite(loader.resources["images/sprites/b_right_en.png"].texture)
+	rotateRightButton = new Sprite(loader.resources["images/sprites/b_right_en.png"].texture)
 	rotateRightButton.width = Math.floor(WIDTH*0.1)
+	rotateRightButton.height = Math.floor(HEIGHT*0.05);
 	rotateRightButton.anchor.set(0.5);
 	rotateRightButton.x = Math.floor(WIDTH*0.92);
-	rotateRightButton.y = Math.floor(HEIGHT*0.7);
+	rotateRightButton.y = Math.floor(HEIGHT*0.75);
 	rotateRightButton.interactive = true;
 	rotateRightButton.buttonMode = true;
 	rotateRightButton.on('pointerdown', () => addInstruction(RIGHT));
 	app.stage.addChild(rotateRightButton);
 
-	const rotateLeftButton = new Sprite(loader.resources["images/sprites/b_left_en.png"].texture)
+	rotateLeftButton = new Sprite(loader.resources["images/sprites/b_left_en.png"].texture)
 	rotateLeftButton.width = Math.floor(WIDTH*0.1)
+	rotateLeftButton.height = Math.floor(HEIGHT*0.05);
 	rotateLeftButton.anchor.set(0.5);
 	rotateLeftButton.x = Math.floor(WIDTH*0.68);
-	rotateLeftButton.y = Math.floor(HEIGHT*0.7);
+	rotateLeftButton.y = Math.floor(HEIGHT*0.75);
 	rotateLeftButton.interactive = true;
 	rotateLeftButton.buttonMode = true;
 	rotateLeftButton.on('pointerdown', () => addInstruction(LEFT));
 	app.stage.addChild(rotateLeftButton);
 
-	const changeColor = new Sprite(loader.resources["images/sprites/b_color_en.png"].texture)
+	changeColor = new Sprite(loader.resources["images/sprites/b_color_en.png"].texture)
 	changeColor.width = Math.floor(WIDTH*0.1)
+	changeColor.height = Math.floor(HEIGHT*0.1);
 	changeColor.anchor.set(0.5);
 	changeColor.x = Math.floor(WIDTH*0.8);
-	changeColor.y = Math.floor(HEIGHT*0.6);
+	changeColor.y = Math.floor(HEIGHT*0.65);
 	changeColor.interactive = true;
 	changeColor.buttonMode = true;
 	changeColor.on('pointerdown', () => addInstruction(COLOR));
 	app.stage.addChild(changeColor);
 
-	const runButton = new Sprite(loader.resources["images/sprites/run_en.png"].texture) 
+	runButton = new Sprite(loader.resources["images/sprites/run_en.png"].texture) 
 	runButton.width = Math.floor(WIDTH*0.1);
+	runButton.height = Math.floor(HEIGHT*0.1);
 	runButton.anchor.set(0.5);
 	runButton.x = Math.floor(WIDTH*0.8);
-	runButton.y = Math.floor(HEIGHT*0.9);
+	runButton.y = Math.floor(HEIGHT*0.85);
 	runButton.interactive = true;
 	runButton.buttonMode = true;
 	runButton.on('pointerdown', runMaze);
@@ -93,7 +103,7 @@ function setButtons() {
 }
 
 function setInstructionStack() {
-	instructions = []
+	instructions = [];
 	instructionsContainer = new Container();
 	instructionsContainer.x = Math.floor(WIDTH*0.6) + 5;
 	instructionsContainer.y = Math.floor(title.height);
@@ -115,6 +125,8 @@ function drawInstructions() {
 	for(let i=0; i< instructions.length; i++) {
 
 		let sprite = instructions[i].getSprite();
+		sprite.width = Math.floor(WIDTH*0.15);
+		sprite.height = Math.floor(HEIGHT*0.03);
 		sprite.y = temp_y;
 		sprite.interactive = true;
 		sprite.buttonMode = true;
@@ -131,7 +143,99 @@ function removeInstruction(spriteId) {
 }
 
 function resizeStackIfNecessary() {
-	if (instructionsContainer.height > HEIGHT*0.5) {
-		instructionsContainer.height = Math.floor(HEIGHT*0.5);
+	if (instructionsContainer.height > HEIGHT*0.45) {
+		instructionsContainer.height = Math.floor(HEIGHT*0.45);
 	}
 }
+
+function changeButtons(){
+	app.stage.removeChild(forwardButton);
+	app.stage.removeChild(rotateRightButton);
+	app.stage.removeChild(rotateLeftButton);
+	app.stage.removeChild(changeColor);
+	app.stage.removeChild(runButton);
+	app.stage.removeChild(instructionsContainer);
+	setInstructionStack();
+	mode++;
+	console.log(mode) 
+	if(mode %2 == 1){
+		forwardButton = new Sprite(loader.resources["images/sprites/b_forward_fr.png"].texture);
+		rotateRightButton = new Sprite(loader.resources["images/sprites/b_right_fr.png"].texture);
+		rotateLeftButton = new Sprite(loader.resources["images/sprites/b_left_fr.png"].texture);
+		changeColor = new Sprite(loader.resources["images/sprites/b_color_fr.png"].texture);
+		runButton = new Sprite(loader.resources["images/sprites/run_fr.png"].texture);
+	}
+	else{
+		forwardButton = new Sprite(loader.resources["images/sprites/b_forward_en.png"].texture);
+		rotateRightButton = new Sprite(loader.resources["images/sprites/b_right_en.png"].texture);
+		rotateLeftButton = new Sprite(loader.resources["images/sprites/b_left_en.png"].texture);
+		changeColor = new Sprite(loader.resources["images/sprites/b_color_en.png"].texture);
+		runButton = new Sprite(loader.resources["images/sprites/run_en.png"].texture);
+	}
+
+	forwardButton.width = Math.floor(WIDTH*0.1);
+	forwardButton.height = Math.floor(HEIGHT*0.05);
+	forwardButton.anchor.set(0.5);
+	forwardButton.x = Math.floor(WIDTH*0.8);
+	forwardButton.y = Math.floor(HEIGHT*0.75);
+	forwardButton.interactive = true;
+	forwardButton.buttonMode = true;
+	forwardButton.on('pointerdown', () => addInstruction(FORWARD));
+	app.stage.addChild(forwardButton);
+
+	rotateRightButton.width = Math.floor(WIDTH*0.1)
+	rotateRightButton.height = Math.floor(HEIGHT*0.05);
+	rotateRightButton.anchor.set(0.5);
+	rotateRightButton.x = Math.floor(WIDTH*0.92);
+	rotateRightButton.y = Math.floor(HEIGHT*0.75);
+	rotateRightButton.interactive = true;
+	rotateRightButton.buttonMode = true;
+	rotateRightButton.on('pointerdown', () => addInstruction(RIGHT));
+	app.stage.addChild(rotateRightButton);
+
+	rotateLeftButton.width = Math.floor(WIDTH*0.1)
+	rotateLeftButton.height = Math.floor(HEIGHT*0.05);
+	rotateLeftButton.anchor.set(0.5);
+	rotateLeftButton.x = Math.floor(WIDTH*0.68);
+	rotateLeftButton.y = Math.floor(HEIGHT*0.75);
+	rotateLeftButton.interactive = true;
+	rotateLeftButton.buttonMode = true;
+	rotateLeftButton.on('pointerdown', () => addInstruction(LEFT));
+	app.stage.addChild(rotateLeftButton);
+
+	changeColor.width = Math.floor(WIDTH*0.1)
+	changeColor.height = Math.floor(HEIGHT*0.1);
+	changeColor.anchor.set(0.5);
+	changeColor.x = Math.floor(WIDTH*0.8);
+	changeColor.y = Math.floor(HEIGHT*0.65);
+	changeColor.interactive = true;
+	changeColor.buttonMode = true;
+	changeColor.on('pointerdown', () => addInstruction(COLOR));
+	app.stage.addChild(changeColor);
+
+	runButton.width = Math.floor(WIDTH*0.1);
+	runButton.height = Math.floor(HEIGHT*0.1);
+	runButton.anchor.set(0.5);
+	runButton.x = Math.floor(WIDTH*0.8);
+	runButton.y = Math.floor(HEIGHT*0.85);
+	runButton.interactive = true;
+	runButton.buttonMode = true;
+	runButton.on('pointerdown', runMaze);
+	app.stage.addChild(runButton);
+
+}
+
+function setChangeLanguageButton(){
+	languageButton = new Sprite(loader.resources["images/sprites/active.png"].texture) 
+	languageButton.width = Math.floor(WIDTH*0.05);
+	languageButton.height = Math.floor(HEIGHT*0.05);
+	languageButton.anchor.set(0.5);
+	languageButton.x = Math.floor(WIDTH*0.92);
+	languageButton.y = Math.floor(HEIGHT*0.9);
+	languageButton.interactive = true;
+	languageButton.buttonMode = true;
+	languageButton.on('pointerdown', () => changeButtons());
+	app.stage.addChild(languageButton);
+
+}
+
