@@ -1,6 +1,4 @@
-
 // ---------------- INSTRUCTION MODEL  ------------------
-
 class Instruction {
   constructor(type) {
 		this.type = type;
@@ -12,81 +10,47 @@ class Instruction {
 
   getSprite() {
 		switch(this.type) {
-			case FORWARD: this.spriteName = 'forward_'; break;
-			case LEFT: this.spriteName = 'left_'; break;
-			case RIGHT: this.spriteName = 'right_'; break;
-			case COLOR: this.spriteName = 'color_'; break;
-			default: this.spriteName = 'forward_';
+			case FORWARD: this.spriteName = 'forward'; break;
+			case LEFT: this.spriteName = 'left'; break;
+			case RIGHT: this.spriteName = 'right'; break;
+			case COLOR: this.spriteName = 'color'; break;
+			default: this.spriteName = 'forward';
 		}
-		return new Sprite(loader.resources['images/sprites/' + this.spriteName + LANGUAGE + '.png'].texture);
+		return new Sprite(getSpriteTexture(this.spriteName));
   }
-
 }
 
 
 // ---------------- INSTRUCTION VIEWS AND FUNCTION  ------------------
-
 function setupInstructionScreen() {
 	setTitle();
-	setButtons();
 	setInstructionStack();
+	setButtons();
 }
 
 function setTitle() {
-	title = new Sprite(loader.resources["images/sprites/title_en.png"].texture);
+	title = new Sprite(getSpriteTexture('title'));
 	title.anchor.set(0.5, 0);
 	setSpriteWidth(title, Math.floor(WIDTH * INSTRUCTION_RATIO / 2))
-	title.x = Math.floor(WIDTH * MAZE_RATIO + WIDTH * INSTRUCTION_RATIO / 2);
+	title.x = Math.floor(INSTRUCTION_MIDDLE);
 	title.y = Math.floor(HEIGHT * 0.01) // margin
 	app.stage.addChild(title);
 }
 
 function setButtons() {
-	const forwardButton = new Sprite(loader.resources["images/sprites/b_forward_en.png"].texture) 
-	forwardButton.width = Math.floor(WIDTH*0.1);
-	forwardButton.anchor.set(0.5);
-	forwardButton.x = Math.floor(WIDTH*0.8);
-	forwardButton.y = Math.floor(HEIGHT*0.7);
-	forwardButton.interactive = true;
-	forwardButton.buttonMode = true;
-	forwardButton.on('pointerdown', () => addInstruction(FORWARD));
-	app.stage.addChild(forwardButton);
+	buttonsContainer = new Container();
+	app.stage.addChild(buttonsContainer);
 
-	const rotateRightButton = new Sprite(loader.resources["images/sprites/b_right_en.png"].texture)
-	rotateRightButton.width = Math.floor(WIDTH*0.1)
-	rotateRightButton.anchor.set(0.5);
-	rotateRightButton.x = Math.floor(WIDTH*0.92);
-	rotateRightButton.y = Math.floor(HEIGHT*0.7);
-	rotateRightButton.interactive = true;
-	rotateRightButton.buttonMode = true;
-	rotateRightButton.on('pointerdown', () => addInstruction(RIGHT));
-	app.stage.addChild(rotateRightButton);
+	addInstructionButton('b_forward', FORWARD, INSTRUCTION_MIDDLE, HEIGHT * 0.72, BUTTON_WIDTH*1.3, 0.5, 0);
+	addInstructionButton('b_right', RIGHT, WIDTH*0.98, HEIGHT*0.8, BUTTON_WIDTH*1.3, 1, 0);
+	addInstructionButton('b_left', LEFT, WIDTH*0.63, HEIGHT*0.8, BUTTON_WIDTH*1.3, 0, 0);
+	addInstructionButton('b_color', COLOR, INSTRUCTION_MIDDLE, HEIGHT*0.98, BUTTON_WIDTH*1.3, 0.5, 1);
 
-	const rotateLeftButton = new Sprite(loader.resources["images/sprites/b_left_en.png"].texture)
-	rotateLeftButton.width = Math.floor(WIDTH*0.1)
-	rotateLeftButton.anchor.set(0.5);
-	rotateLeftButton.x = Math.floor(WIDTH*0.68);
-	rotateLeftButton.y = Math.floor(HEIGHT*0.7);
-	rotateLeftButton.interactive = true;
-	rotateLeftButton.buttonMode = true;
-	rotateLeftButton.on('pointerdown', () => addInstruction(LEFT));
-	app.stage.addChild(rotateLeftButton);
-
-	const changeColor = new Sprite(loader.resources["images/sprites/b_color_en.png"].texture)
-	changeColor.width = Math.floor(WIDTH*0.1)
-	changeColor.anchor.set(0.5);
-	changeColor.x = Math.floor(WIDTH*0.8);
-	changeColor.y = Math.floor(HEIGHT*0.6);
-	changeColor.interactive = true;
-	changeColor.buttonMode = true;
-	changeColor.on('pointerdown', () => addInstruction(COLOR));
-	app.stage.addChild(changeColor);
-
-	const runButton = new Sprite(loader.resources["images/sprites/run_en.png"].texture) 
-	runButton.width = Math.floor(WIDTH*0.1);
-	runButton.anchor.set(0.5);
-	runButton.x = Math.floor(WIDTH*0.8);
-	runButton.y = Math.floor(HEIGHT*0.9);
+	const runButton = new Sprite(getSpriteTexture('run')) 
+	setSpriteWidth(runButton, WIDTH*0.07);
+	runButton.anchor.set(1, 1);
+	runButton.x = Math.floor(stackFrame.getBounds().x + stackFrame.getBounds().width);
+	runButton.y = Math.floor(stackFrame.getBounds().y + stackFrame.getBounds().height);
 	runButton.interactive = true;
 	runButton.buttonMode = true;
 	runButton.on('pointerdown', runMaze);
@@ -96,19 +60,20 @@ function setButtons() {
 function setInstructionStack() {
 	instructions = []
 	instructionsContainer = new Container();
-	addStackFrame();
-	instructionsContainer.x = Math.floor(WIDTH*0.6) + 5;
+	instructionsContainer.x = Math.floor(WIDTH*MAZE_RATIO);
 	instructionsContainer.y = Math.floor(title.height + HEIGHT * 0.02);
 	app.stage.addChild(instructionsContainer);
+	addStackFrameSprite();
 }
 
-function addStackFrame() {
+function addStackFrameSprite() {
 	stackFrame = new Sprite(loader.resources["images/sprites/stackframe.png"].texture);
 	stackFrame.width = Math.floor( (INSTRUCTION_RATIO - 0.05) * WIDTH );
 	stackFrame.anchor.set(0.5, 0);
 	stackFrame.height = Math.floor(0.6 * HEIGHT);
-	stackFrame.x = Math.floor(INSTRUCTION_RATIO * WIDTH / 2);
-	instructionsContainer.addChild(stackFrame);
+	stackFrame.x = Math.floor(INSTRUCTION_MIDDLE);
+	stackFrame.y = Math.floor(title.height + HEIGHT * 0.02);
+	app.stage.addChild(stackFrame);
 }
 
 function addInstruction(instructionCode) {
@@ -118,23 +83,21 @@ function addInstruction(instructionCode) {
 
 function updateInstructions() {
 	instructionsContainer.removeChildren();
-	addStackFrame();
 	drawInstructions();
 }
 
 function drawInstructions() {
-	temp_y=10;
+	let deldaY = 10;
 	for(let i = 0; i < instructions.length; i++) {
 		let sprite = instructions[i].getSprite();
-		sprite.anchor.set(0.5, 0)
-		sprite.x = stackFrame.x;
-		sprite.y = temp_y;
+		sprite.x = stackFrame.width * 0.1;
+		sprite.y = deldaY;
 		sprite.interactive = true;
 		sprite.buttonMode = true;
 		setSpriteWidth(sprite, Math.floor(stackFrame.width - stackFrame.width * 0.05))
+		deldaY += (sprite.height + 5);
 		sprite.on('pointerdown', () => removeInstruction(i));
 		instructionsContainer.addChild(sprite);
-		temp_y += (sprite.height + 5);
 	}
 	resizeStackIfNecessary();
 }
@@ -145,8 +108,9 @@ function removeInstruction(spriteId) {
 }
 
 function resizeStackIfNecessary() {
-	if (instructionsContainer.height > HEIGHT*0.5) {
-		instructionsContainer.height = Math.floor(HEIGHT*0.5);
+	const stackHeight = stackFrame.getBounds().height;
+	if (instructionsContainer.height > stackHeight - 20) {
+		instructionsContainer.height = stackHeight - 20;
 	}
 }
 
@@ -156,4 +120,20 @@ function setSpriteWidth(sprite, width) {
 
 function setSpriteHeight(sprite, height) {
 	sprite.scale.set(height / sprite.height);
+}
+
+function getSpriteTexture(spriteName) {
+	return loader.resources[`images/sprites/${spriteName}_${LANGUAGE}.png`].texture;
+}
+
+function addInstructionButton(spriteName, buttonCode, x, y, width, xAnchor=0.5, yAnchor=0) {
+	const button = new Sprite(getSpriteTexture(spriteName));
+	button.interactive = true;
+	button.buttonMode = true;
+	button.anchor.set(xAnchor, yAnchor);
+	setSpriteWidth(button, width);
+	button.x = Math.floor(x);
+	button.y = Math.floor(y);
+	button.on('pointerdown', () => addInstruction(buttonCode));
+	buttonsContainer.addChild(button);
 }
