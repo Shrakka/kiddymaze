@@ -3,7 +3,8 @@ const app = new PIXI.Application({
 	height: HEIGHT,
 	antialias: true, 
 	transparent: false, 
-	resolution: 1
+	resolution: 1,
+	backgroundColor: BACKGROUND,
 });
 
 setupApp();

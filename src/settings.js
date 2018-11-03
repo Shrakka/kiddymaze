@@ -25,6 +25,7 @@ COLOR = 3;
 
 RED = 0xff0000;
 BLUE = 0x0000ff;
+BACKGROUND = 0x422e2f;
 
 WALK = 0;
 COLLIDE = 1;
