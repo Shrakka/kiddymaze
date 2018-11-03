@@ -8,7 +8,6 @@ class Instruction {
 		this.position = 0;
 		this.x = 0;
 		this.y = 0;
-		this.execute = () => console.log('hey');
   }
 
   getSprite() {
@@ -34,9 +33,11 @@ function setupInstructionScreen() {
 }
 
 function setTitle() {
-	title = new Sprite(loader.resources["images/sprites/title_en.png"].texture)
-	title.width = Math.floor(WIDTH * INSTRUCTION_RATIO);
-	title.x = Math.floor(WIDTH * MAZE_RATIO);
+	title = new Sprite(loader.resources["images/sprites/title_en.png"].texture);
+	title.anchor.set(0.5, 0);
+	setSpriteWidth(title, Math.floor(WIDTH * INSTRUCTION_RATIO / 2))
+	title.x = Math.floor(WIDTH * MAZE_RATIO + WIDTH * INSTRUCTION_RATIO / 2);
+	title.y = Math.floor(HEIGHT * 0.01) // margin
 	app.stage.addChild(title);
 }
 
@@ -95,9 +96,19 @@ function setButtons() {
 function setInstructionStack() {
 	instructions = []
 	instructionsContainer = new Container();
+	addStackFrame();
 	instructionsContainer.x = Math.floor(WIDTH*0.6) + 5;
-	instructionsContainer.y = Math.floor(title.height);
+	instructionsContainer.y = Math.floor(title.height + HEIGHT * 0.02);
 	app.stage.addChild(instructionsContainer);
+}
+
+function addStackFrame() {
+	stackFrame = new Sprite(loader.resources["images/sprites/stackframe.png"].texture);
+	stackFrame.width = Math.floor( (INSTRUCTION_RATIO - 0.05) * WIDTH );
+	stackFrame.anchor.set(0.5, 0);
+	stackFrame.height = Math.floor(0.6 * HEIGHT);
+	stackFrame.x = Math.floor(INSTRUCTION_RATIO * WIDTH / 2);
+	instructionsContainer.addChild(stackFrame);
 }
 
 function addInstruction(instructionCode) {
@@ -107,20 +118,23 @@ function addInstruction(instructionCode) {
 
 function updateInstructions() {
 	instructionsContainer.removeChildren();
+	addStackFrame();
 	drawInstructions();
 }
 
 function drawInstructions() {
 	temp_y=10;
-	for(let i=0; i< instructions.length; i++) {
-
+	for(let i = 0; i < instructions.length; i++) {
 		let sprite = instructions[i].getSprite();
+		sprite.anchor.set(0.5, 0)
+		sprite.x = stackFrame.x;
 		sprite.y = temp_y;
 		sprite.interactive = true;
 		sprite.buttonMode = true;
+		setSpriteWidth(sprite, Math.floor(stackFrame.width - stackFrame.width * 0.05))
 		sprite.on('pointerdown', () => removeInstruction(i));
 		instructionsContainer.addChild(sprite);
-		temp_y +=sprite.height;
+		temp_y += (sprite.height + 5);
 	}
 	resizeStackIfNecessary();
 }
@@ -134,4 +148,12 @@ function resizeStackIfNecessary() {
 	if (instructionsContainer.height > HEIGHT*0.5) {
 		instructionsContainer.height = Math.floor(HEIGHT*0.5);
 	}
+}
+
+function setSpriteWidth(sprite, width) {
+	sprite.scale.set(width / sprite.width);
+}
+
+function setSpriteHeight(sprite, height) {
+	sprite.scale.set(height / sprite.height);
 }
