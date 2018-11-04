@@ -45,7 +45,7 @@ class Character {
 
 	isEdgy() {
 		// Return True if character is facing a outside boundery of the maze
-		switch(this.orientation % Math.PI) {
+		switch(this.getBoundedOrientation()) {
 			case SOUTH: return this.lig === maze.getSize().lig - 1;
 			case NORTH: return this.lig === 0;
 			case EAST:  return this.col === maze.getSize().col - 1;
@@ -54,7 +54,7 @@ class Character {
 	}
 
 	isFacingWall() {
-		switch(this.orientation) {	
+		switch(this.getBoundedOrientation()) {	
 			case SOUTH: return (maze.getGrid()[this.lig + 1][this.col] === WALL) || (maze.getGrid()[this.lig + 1][this.col] === WAL2);
 			case NORTH: return (maze.getGrid()[this.lig - 1][this.col] === WALL) || (maze.getGrid()[this.lig - 1][this.col] === WAL2);
 			case EAST:  return (maze.getGrid()[this.lig][this.col + 1] === WALL) || (maze.getGrid()[this.lig][this.col + 1] === WAL2);
@@ -64,14 +64,14 @@ class Character {
 
 	isFacingWrongDoor() {
 		if(this.color === RED) {
-			switch(this.orientation) {
+			switch(this.getBoundedOrientation()) {
 				case SOUTH: return maze.getGrid()[this.lig + 1][this.col] === D_BL;
 				case NORTH: return maze.getGrid()[this.lig - 1][this.col] === D_BL;
 				case EAST:  return maze.getGrid()[this.lig][this.col + 1] === D_BL;
 				case WEST:  return maze.getGrid()[this.lig][this.col - 1] === D_BL;
 			}
 		} else {
-			switch(this.orientation) {
+			switch(this.getBoundedOrientation()) {
 				case SOUTH: return maze.getGrid()[this.lig + 1][this.col] === D_RD;
 				case NORTH: return maze.getGrid()[this.lig - 1][this.col] === D_RD;
 				case EAST:  return maze.getGrid()[this.lig][this.col + 1] === D_RD;
@@ -81,26 +81,30 @@ class Character {
 	}
 
 	goForward() {
-		switch(this.orientation) {
+		switch(this.getBoundedOrientation()) {
 			case SOUTH: this.lig += 1; break;
 			case NORTH: this.lig -= 1; break;
 			case EAST:  this.col += 1; break;
 			case WEST:  this.col -= 1; break;
 		}
 	}
+
+	getBoundedOrientation() {
+		return (2*Math.PI + this.orientation) % (2*Math.PI);
+	}
 }
 
 // ---------------- CHARACTER ANIMATION AND VIEWS ------------------
 
 function drawStaticCharacter() {
-	// character = new Sprite(loader.resources["images/sprites/active.png"].texture)
 	staticCharacter = new Sprite(loader.resources["images/sprites/cat.png"].texture)
 	staticCharacter.width = TILE_SIZE;
 	staticCharacter.height = TILE_SIZE;
 	staticCharacter.anchor.set(0.5);
-	staticCharacter.x = TILE_SIZE / 2;
-	staticCharacter.y = TILE_SIZE / 2;
+	staticCharacter.x = (CHARACTER_INIT_POSITION[ENTRY_LEVEL].col * TILE_SIZE) + TILE_SIZE / 2;
+	staticCharacter.y = (CHARACTER_INIT_POSITION[ENTRY_LEVEL].lig * TILE_SIZE) + TILE_SIZE / 2;
 	staticCharacter.rotation = CHARACTER_INIT_POSITION[ENTRY_LEVEL].orientation;
+	staticCharacter.tint = CHARACTER_INIT_POSITION[ENTRY_LEVEL].color;
 	mazeContainer.addChild(staticCharacter);
 }
 
@@ -120,6 +124,7 @@ function createAnimatedCharacter(type = WALK) {
 	animatedCharacter.height = staticCharacter.height;
 	animatedCharacter.width = staticCharacter.width;
 	animatedCharacter.rotation = staticCharacter.rotation;
+	animatedCharacter.tint = staticCharacter.tint;
 	animatedCharacter.anchor.set(0.5);
 	animatedCharacter.animationSpeed = 0.17;
 	animatedCharacter.play();
@@ -141,13 +146,14 @@ function getFrames(type) {
 	return frames;
 }
 
-function createAnimatedCollision(x, y, rotation) {
+function createAnimatedCollision(x, y, rotation, tint) {
     animatedCollision = new PIXI.extras.AnimatedSprite(getFrames(COLLIDE));
     animatedCollision.x = x;
     animatedCollision.y = y;
 		animatedCollision.rotation = rotation;
+		animatedCollision.tint = tint;
 		animatedCollision.height = staticCharacter.height;
-    animatedCollision.width = staticCharacter.width;
+		animatedCollision.width = staticCharacter.width;
     animatedCollision.anchor.set(0.5);
     animatedCollision.animationSpeed = 0.2;
     animatedCollision.play();
@@ -161,7 +167,7 @@ function createTweenList(instuctions) {
 
 function setTweenChain(tweens, cb) {
 	for (let i = 0; i < (tweens.length - 1); i++) {
-		tweens[i].on('start', () => checkCollision(tweens[i]))
+		tweens[i].on('start', () => { checkCollision(tweens[i]); setColor(tweens[i]); })
 		tweens[i].on('end', () => { checkEndCollision(); tweens[i+1].start(); });
 	}
 	// special case for last tween
@@ -180,6 +186,7 @@ function getTween(instruction) {
 	const start = instructionCharacter.getState();
 	const type = instructionCharacter.updateState(instruction);
 	const end = instructionCharacter.getState();
+	console.log(instruction.type, start, end);
 
 	let tween = PIXI.tweenManager.createTween(animatedCharacter);
 	tween.time = 1000;
@@ -190,9 +197,9 @@ function getTween(instruction) {
 function checkCollision(tween) {
 	const from = tween._from;
 	const to = tween._to;
-	if ( (from.x === to.x) && (from.y === to.y) && (from.rotation === to.rotation)){
+	if ( (from.x === to.x) && (from.y === to.y) && (from.rotation === to.rotation) && (from.tint === to.tint)){
 		animatedCharacter.visible = false;
-		createAnimatedCollision(from.x, from.y, from.rotation);
+		createAnimatedCollision(from.x, from.y, from.rotation, from.tint);
 	}
 }
 
@@ -201,6 +208,10 @@ function checkEndCollision() {
 		mazeContainer.removeChild(animatedCollision);
 	}
 	animatedCharacter.visible = true;
+}
+
+function setColor(tween) {
+	animatedCharacter.color = tween._to.tint;
 }
 
 function updateAnimatedCharacter(type, start) {

@@ -18,6 +18,6 @@ const MAZES = {
 }
 
 const CHARACTER_INIT_POSITION = {
-  1: { col: 0, lig: 0, orientation: SOUTH, color: RED },
+  1: { col: 0, lig: 5, orientation: NORTH, color: BLUE },
   2: { col: 0, lig: 0, orientation: SOUTH, color: BLUE },
 }
