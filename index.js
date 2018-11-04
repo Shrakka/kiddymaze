@@ -21,7 +21,8 @@ function showResizeWarning() {
 		fontWeight: 'bold',
 		stroke: '#ffffff',
 		strokeThickness: 5 })
-	const resizeWarning = new Text('PLEASE RELOAD THE PAGE AFTER RESIZE', styleText);
+	const message = (LANGUAGE == 'en' ? 'PLEASE RELOAD THE PAGE AFTER RESIZE' : 'RECHARGEZ LA PAGE APRES REDIMENSIONNEMENT');
+	const resizeWarning = new Text(message, styleText);
 	resizeWarning.anchor.set(0.5);
 	resizeWarning.x = Math.floor(WIDTH/2);
 	resizeWarning.y = Math.floor(HEIGHT/2);

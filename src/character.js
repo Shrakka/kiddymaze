@@ -109,12 +109,15 @@ function drawStaticCharacter() {
 }
 
 function runMaze() {
-	staticCharacter.alpha = 0;
-	createAnimatedCharacter();
-	instructionCharacter = new Character(ENTRY_LEVEL);
-	instructions = (instructions.length === 0) ? createStubInstructions() : instructions; // to be updated;
-	tweens = createTweenList(instructions);
-	tweens[0].start();
+	if (instructions.length === 0) {
+		setEmptyStackMessage();
+	} else {
+		staticCharacter.alpha = 0;
+		createAnimatedCharacter();
+		instructionCharacter = new Character(ENTRY_LEVEL);
+		tweens = createTweenList(instructions);
+		tweens[0].start();
+	}
 }
 
 function createAnimatedCharacter(type = WALK) {
@@ -186,7 +189,6 @@ function getTween(instruction) {
 	const start = instructionCharacter.getState();
 	const type = instructionCharacter.updateState(instruction);
 	const end = instructionCharacter.getState();
-	console.log(instruction.type, start, end);
 
 	let tween = PIXI.tweenManager.createTween(animatedCharacter);
 	tween.time = 1000;
@@ -226,16 +228,17 @@ function updateAnimatedCharacter(type, start) {
 	animatedCharacter.play();
 }
 
-function createStubInstructions() {
-	stubInstructions = []
-	stubInstructions.push(new Instruction(FORWARD))
-	// stubInstructions.push(new Instruction(FORWARD))
-	stubInstructions.push(new Instruction(LEFT))
-	stubInstructions.push(new Instruction(FORWARD))
-	// stubInstructions.push(new Instruction(FORWARD))
-	// stubInstructions.push(new Instruction(FORWARD))
-	// stubInstructions.push(new Instruction(FORWARD))
-	// stubInstructions.push(new Instruction(RIGHT))
-	// stubInstructions.push(new Instruction(FORWARD))
-	return stubInstructions;
+function setEmptyStackMessage() {
+	const styleText = new TextStyle({
+		fontSize: 15,
+		fontWeight: 'bold',
+		stroke: '#ffffff',
+		strokeThickness: 5 });
+	const message = (LANGUAGE == 'en' ? 'No instructions to run yet.' : 'Aucune instruction à exécuter.');
+	const emptyStackMessage = new Text(message, styleText);
+	emptyStackMessage.anchor.set(0.5);
+	emptyStackMessage.x = (INSTRUCTION_RATIO * WIDTH) / 2;
+	emptyStackMessage.y = 150;
+	instructionsContainer.addChild(emptyStackMessage);
+	setTimeout(() => { emptyStackMessage.destroy(); }, 2000);
 }

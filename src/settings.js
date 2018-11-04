@@ -22,8 +22,8 @@ LEFT = 1;
 RIGHT = 2;
 COLOR = 3;
 
-RED = 0xff0000;
-BLUE = 0x0000ff;
+RED = 0xd63b5f;
+BLUE = 0x4280f4;
 BACKGROUND = 0x422e2f;
 
 WALK = 0;

@@ -26,7 +26,6 @@ function setupMazeScreen() {
     Math.floor(HEIGHT / maze.getSize().lig));
 	drawMaze();
 	drawStaticCharacter();
-  bindKeys(); // to be removed
 }
 
 function drawMaze() {
@@ -41,10 +40,12 @@ function drawMaze() {
 				case GOAL: texture = loader.resources["images/sprites/goal.png"].texture; break;
 			}
 			let sprite = new Sprite(texture);
+			sprite.anchor.set(0.5)
 			sprite.width = TILE_SIZE;
 			sprite.height = TILE_SIZE;
-			sprite.x = col * TILE_SIZE;
-			sprite.y = lig * TILE_SIZE;
+			sprite.x = col * TILE_SIZE + TILE_SIZE / 2;
+			sprite.y = lig * TILE_SIZE + TILE_SIZE / 2;
+			if (maze.getGrid()[lig][col] === GOAL) { sprite.scale.set(0.5); }
 			mazeContainer.addChild(sprite);
 		}
 	}

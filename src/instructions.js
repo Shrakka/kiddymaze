@@ -20,7 +20,6 @@ class Instruction {
 	}
 }
 
-
 // ---------------- INSTRUCTION VIEWS AND FUNCTION  ------------------
 function setupInstructionScreen() {
 	setTitle();
