@@ -148,14 +148,15 @@ function setTranslationButton() {
 	translationButton.x = app.screen.width - 5;
 	translationButton.y = app.screen.height - 5;
 	setSpriteWidth(translationButton, 20)
-	translationButton.on('pointerdown', switchLanguage);
+	translationButton.on('pointerdown', () => switchLanguage(translationButton));
 	app.stage.addChild(translationButton);
 }
 
-function switchLanguage() {
-	console.log('change language')
+function switchLanguage(translationButton) {
+	translationButton.setTexture(loader.resources[`images/sprites/${LANGUAGE}.png`].texture);
 	LANGUAGE = (LANGUAGE === 'fr' ? 'en' : 'fr');
 	app.stage.removeChild(buttonsContainer);
 	setButtons();
+	updateInstructions();
 
 }
