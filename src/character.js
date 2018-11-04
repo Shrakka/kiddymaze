@@ -109,6 +109,8 @@ function drawStaticCharacter() {
 }
 
 function runMaze() {
+	runButton.interactive = false;
+	runButton.buttonMode = false;
 	if (instructions.length === 0) {
 		setEmptyStackMessage();
 	} else {
@@ -183,6 +185,8 @@ function resetAnimation() {
 	staticCharacter.alpha = 1;
 	animatedCharacter.alpha = 0;
 	animatedCollision = null;
+	runButton.interactive = true;
+	runButton.buttonMode = true;
 }
 
 function getTween(instruction) {

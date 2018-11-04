@@ -46,7 +46,7 @@ function setButtons() {
 	addInstructionButton('b_left', LEFT, WIDTH*0.63, HEIGHT*0.8, BUTTON_WIDTH*1.3, 0, 0);
 	addInstructionButton('b_color', COLOR, INSTRUCTION_MIDDLE, HEIGHT*0.98, BUTTON_WIDTH*1.3, 0.5, 1);
 
-	const runButton = new Sprite(getSpriteTexture('run')) 
+	runButton = new Sprite(getSpriteTexture('run')) 
 	setSpriteWidth(runButton, WIDTH*0.07);
 	runButton.anchor.set(1, 1);
 	runButton.x = Math.floor(stackFrame.getBounds().x + stackFrame.getBounds().width);
@@ -155,6 +155,7 @@ function switchLanguage(translationButton) {
 	translationButton.setTexture(loader.resources[`images/sprites/${LANGUAGE}.png`].texture);
 	LANGUAGE = (LANGUAGE === 'fr' ? 'en' : 'fr');
 	app.stage.removeChild(buttonsContainer);
+	app.stage.removeChild(runButton);
 	setButtons();
 	updateInstructions();
 

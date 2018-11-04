@@ -26,7 +26,8 @@ function showResizeWarning() {
 	resizeWarning.anchor.set(0.5);
 	resizeWarning.x = Math.floor(WIDTH/2);
 	resizeWarning.y = Math.floor(HEIGHT/2);
-	app.stage.addChild(resizeWarning)
+	app.stage.addChild(resizeWarning);
+	setTimeout(() => resizeWarning.destroy(), 3000);
 }
 
 function loadAssetsAndBootstrap() {
@@ -65,6 +66,7 @@ function loadAssetsAndBootstrap() {
 	.add("images/sprites/wall2.png")
 	.add("images/sprites/en.png")
 	.add("images/sprites/fr.png")
+	.add("images/sprites/door.png")
   .add('images/spritesheets/walk.json')
   .add('images/spritesheets/bump.json')
 	.load(startGame); 

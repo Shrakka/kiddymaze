@@ -31,22 +31,8 @@ function setupMazeScreen() {
 function drawMaze() {
 	for (let lig=0; lig < maze.getSize().lig; lig++) {
 		for (let col=0; col < maze.getSize().col; col++) {
-			addBackgroundTile(lig, col)
-			let texture;
-			switch(maze.getGrid()[lig][col]) {
-				case WALL: texture = loader.resources["images/sprites/wall.png"].texture; break;
-				case WAL2: texture = loader.resources["images/sprites/wall2.png"].texture; break;
-				case FREE: texture = loader.resources["images/sprites/free.png"].texture; break;
-				case GOAL: texture = loader.resources["images/sprites/goal.png"].texture; break;
-			}
-			let sprite = new Sprite(texture);
-			sprite.anchor.set(0.5)
-			sprite.width = TILE_SIZE;
-			sprite.height = TILE_SIZE;
-			sprite.x = col * TILE_SIZE + TILE_SIZE / 2;
-			sprite.y = lig * TILE_SIZE + TILE_SIZE / 2;
-			if (maze.getGrid()[lig][col] === GOAL) { sprite.scale.set(0.5); }
-			mazeContainer.addChild(sprite);
+			addBackgroundTile(lig, col);
+			addTileSprite(lig, col);
 		}
 	}
 	mazeContainer.y = Math.floor( (HEIGHT - TILE_SIZE * maze.getSize().lig) / 2 )
@@ -60,4 +46,31 @@ function addBackgroundTile(lig, col) {
 			tile.x = col * TILE_SIZE;
 			tile.y = lig * TILE_SIZE;
 			mazeContainer.addChild(tile);
+}
+
+function addTileSprite(lig, col) {
+	let tileType = maze.getGrid()[lig][col];
+	let texture;
+	switch(tileType) {
+		case WALL: texture = loader.resources["images/sprites/wall.png"].texture; break;
+		case WAL2: texture = loader.resources["images/sprites/wall2.png"].texture; break;
+		case FREE: texture = loader.resources["images/sprites/free.png"].texture; break;
+		case GOAL: texture = loader.resources["images/sprites/goal.png"].texture; break;
+		case D_RD:
+		case D_BL: texture = loader.resources["images/sprites/door.png"].texture; break;
+	}
+	let sprite = new Sprite(texture);
+	sprite.anchor.set(0.5)
+	sprite.width = TILE_SIZE;
+	sprite.height = TILE_SIZE;
+	sprite.x = col * TILE_SIZE + TILE_SIZE / 2;
+	sprite.y = lig * TILE_SIZE + TILE_SIZE / 2;
+
+	switch(tileType) {
+		case GOAL: sprite.scale.set(0.5); break;
+		case D_BL: sprite.tint = BLUE; break;
+		case D_RD: sprite.tint = RED; break;
+	}
+
+	mazeContainer.addChild(sprite);
 }
