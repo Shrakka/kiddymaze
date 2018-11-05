@@ -69,6 +69,10 @@ function loadAssetsAndBootstrap() {
 	.add("images/sprites/door.png")
   .add('images/spritesheets/walk.json')
   .add('images/spritesheets/bump.json')
+	.add('images/sprites/win_en.png')
+	.add('images/sprites/win_fr.png')
+	.add('images/sprites/lose_en.png')
+	.add('images/sprites/lose_fr.png')
 	.load(startGame); 
 }
 

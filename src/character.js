@@ -6,9 +6,13 @@ class Character {
 		this.orientation = CHARACTER_INIT_POSITION[levelNumber].orientation;
 		this.color = CHARACTER_INIT_POSITION[levelNumber].color;
 	}
+
+	getCoords() {
+  		return {lig: this.lig, col: this.col};
+	}
 	
 	getState() {
-		return {
+  		return {
 			x: this.col * TILE_SIZE + TILE_SIZE / 2,
 			y: this.lig * TILE_SIZE + TILE_SIZE / 2,
 			rotation: this.orientation,
@@ -108,6 +112,18 @@ function drawStaticCharacter() {
 	mazeContainer.addChild(staticCharacter);
 }
 
+function drawStaticCharacterNewPosition(){
+    staticCharacter = new Sprite(loader.resources["images/sprites/cat.png"].texture)
+    staticCharacter.width = TILE_SIZE;
+    staticCharacter.height = TILE_SIZE;
+    staticCharacter.anchor.set(0.5);
+    staticCharacter.x = animatedCharacter.x;
+    staticCharacter.y = animatedCharacter.y;
+    staticCharacter.rotation = animatedCharacter.rotation;
+    staticCharacter.tint = animatedCharacter.tint;
+    mazeContainer.addChild(staticCharacter);
+}
+
 function runMaze() {
 	runButton.interactive = false;
 	runButton.buttonMode = false;
@@ -177,7 +193,7 @@ function setTweenChain(tweens, cb) {
 	}
 	// special case for last tween
 	tweens[tweens.length - 1].on('start', () => checkCollision(tweens[tweens.length - 1]));
-	tweens[tweens.length - 1].on('end', () => { checkEndCollision(); cb()});
+	tweens[tweens.length - 1].on('end', () => { checkEndCollision(); checkVictoryAndReset(); cb()});
 	return tweens;
 }
 
@@ -214,6 +230,41 @@ function checkEndCollision() {
 		mazeContainer.removeChild(animatedCollision);
 	}
 	animatedCharacter.visible = true;
+}
+
+function checkVictoryAndReset(){
+	drawStaticCharacterNewPosition();
+	setTimeout(function(){
+        if(maze.getGrid()[instructionCharacter.lig][instructionCharacter.col] === GOAL){
+        	let imageStr = (LANGUAGE == 'en' ? 'win_en.png' : 'win_fr.png');
+            victory = new Sprite(loader.resources["images/sprites/" + imageStr].texture);
+            victory.width = mazeContainer.width;
+            victory.height = mazeContainer.height;
+            victory.x = mazeContainer.width/2 - (victory.width/2);
+            victory.y = mazeContainer.height/2 - (victory.height/2);
+            mazeContainer.addChild(victory);
+        }
+        else{
+            let imageStr = (LANGUAGE == 'en' ? 'lose_en.png' : 'lose_fr.png');
+            lose = new Sprite(loader.resources["images/sprites/" + imageStr].texture);
+            lose.width = mazeContainer.width;
+            lose.height = mazeContainer.height;
+            lose.x = mazeContainer.width/2 - (lose.width/2);
+            lose.y = mazeContainer.height/2 - (lose.height/2);
+            mazeContainer.addChild(lose);
+        }
+	}, 500);
+
+	setTimeout(function(){
+		mazeContainer.removeChild(staticCharacter);
+        if (victory !== null) {
+            mazeContainer.removeChild(victory);
+        }
+        if (lose !== null) {
+            mazeContainer.removeChild(lose);
+        }
+        drawStaticCharacter();
+	}, 3000);
 }
 
 function setColor(tween) {
